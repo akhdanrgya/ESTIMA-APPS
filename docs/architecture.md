@@ -15,13 +15,13 @@ repositories, services, and object storage. `src/config`: module registry.
 Initial schema includes Better Auth tables, projects, project membership, and audit logs.
 Operational modules, company hierarchy, WBS, workflow, custom field definitions,
 file metadata, and business transactions still require implementation and migrations.
-Current workspace pages are public empty placeholders with no operational data.
-Protect them before connecting real data. Authentication endpoints are configured;
-sign-up is disabled pending an administrator provisioning workflow.
+Workspace pages require server-validated sessions. Authentication endpoints support
+email/password login with public sign-up disabled. A local CLI provisions the first
+administrator; project access remains separately scoped. See `docs/auth.md`.
 
 Figma is the UI source of truth:
 https://www.figma.com/design/4oFPFJCJ4i7F2KJjYjMT8u/APP-UI-UX?node-id=1-26
-The initial shell is temporary pending access to the Figma design context.
+The login screen follows Figma frame `1:2`; the workspace shell is still temporary.
 
 Implement feature libraries (charts, calendar, workflow, uploads, PDF/Excel) when their
 modules are developed. Offline PWA and advanced modules are deferred per PRD.

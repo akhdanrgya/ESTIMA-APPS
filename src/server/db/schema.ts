@@ -1,9 +1,14 @@
-import { pgTable, text, timestamp, boolean, jsonb, primaryKey, index } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, jsonb, primaryKey, index, integer, bigint } from "drizzle-orm/pg-core";
 
 export const user = pgTable("users", {
   id: text("id").primaryKey(), name: text("name").notNull(), email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").notNull().default(false), image: text("image"),
+  systemRole: text("system_role", { enum: ["admin", "member"] }).notNull().default("member"),
   createdAt: timestamp("created_at").notNull().defaultNow(), updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+export const rateLimit = pgTable("auth_rate_limits", {
+  id: text("id").primaryKey(), key: text("key").notNull().unique(),
+  count: integer("count").notNull(), lastRequest: bigint("last_request", { mode: "number" }).notNull(),
 });
 export const session = pgTable("sessions", {
   id: text("id").primaryKey(), token: text("token").notNull().unique(), expiresAt: timestamp("expires_at").notNull(),

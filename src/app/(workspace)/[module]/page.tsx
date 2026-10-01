@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import { modules } from "@/config/modules";
+import { requirePageSession } from "@/server/auth/session";
 export function generateStaticParams() { return modules.filter(m => m.slug !== "dashboard").map(m => ({ module: m.slug })); }
 export default async function ModulePage({ params }: { params: Promise<{ module: string }> }) {
+  await requirePageSession();
   const { module: slug } = await params;
   const moduleInfo = modules.find(m => m.slug === slug);
   if (!moduleInfo || slug === "dashboard") notFound();

@@ -1,3 +1,10 @@
 import { getAuth } from "@/server/auth";
-export async function GET(request: Request) { return getAuth().handler(request); }
-export async function POST(request: Request) { return getAuth().handler(request); }
+async function handle(request: Request) {
+  try { return await getAuth().handler(request); }
+  catch {
+    console.error("Authentication service unavailable. Check database and auth configuration.");
+    return Response.json({ code: "AUTH_UNAVAILABLE", message: "Sign-in is temporarily unavailable." }, { status: 503 });
+  }
+}
+export const GET = handle;
+export const POST = handle;

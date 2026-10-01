@@ -4,7 +4,8 @@ import { usePathname } from "next/navigation";
 import { HardHat, LayoutDashboard, FolderKanban, ChevronRight } from "lucide-react";
 import { modules } from "@/config/modules";
 import { cn } from "@/lib/utils";
-export function AppShell({ children }: { children: React.ReactNode }) {
+import { LogoutButton } from "@/features/auth/logout-button";
+export function AppShell({ children, userName }: { children: React.ReactNode; userName: string }) {
   const pathname = usePathname();
   return <div className="min-h-screen lg:grid lg:grid-cols-[240px_1fr]">
     <aside className="bg-[#10243b] text-slate-300 lg:min-h-screen">
@@ -14,6 +15,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </Link>)}</nav>
       <p className="hidden px-6 py-8 text-xs leading-5 text-slate-400 lg:block">Project control &amp;<br />field operation platform</p>
     </aside>
-    <div className="min-w-0"><header className="flex min-h-20 flex-wrap items-center justify-between gap-3 border-b bg-white px-6"><div className="flex items-center gap-3 text-sm"><span className="text-muted-foreground">Workspace</span><ChevronRight className="size-4 text-slate-400" /><span className="font-medium">Belum ada proyek dipilih</span></div><span className="rounded border bg-slate-50 px-2.5 py-1 text-xs text-slate-600">Setup awal</span></header><main id="main-content" className="mx-auto max-w-[1600px] p-5 md:p-8">{children}</main></div>
+    <div className="min-w-0"><header className="flex min-h-20 flex-wrap items-center justify-between gap-3 border-b bg-white px-6"><div className="flex items-center gap-3 text-sm"><span className="text-muted-foreground">Workspace</span><ChevronRight className="size-4 text-slate-400" /><span className="font-medium">Belum ada proyek dipilih</span></div><div className="flex items-center gap-3"><span className="text-sm">{userName}</span><LogoutButton /></div></header><main id="main-content" className="mx-auto max-w-[1600px] p-5 md:p-8">{children}</main></div>
   </div>;
 }

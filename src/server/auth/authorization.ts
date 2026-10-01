@@ -1,11 +1,10 @@
 import "server-only";
-import { headers } from "next/headers";
 import { and, eq } from "drizzle-orm";
-import { getAuth } from ".";
+import { getSession } from "./session";
 import { getDb } from "@/server/db";
 import { projectMembers } from "@/server/db/schema";
 export async function requireSession() {
-  const session = await getAuth().api.getSession({ headers: await headers() });
+  const session = await getSession();
   if (!session) throw new Error("Unauthenticated");
   return session;
 }

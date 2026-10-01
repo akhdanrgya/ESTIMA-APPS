@@ -8,6 +8,13 @@
       "when": 1790865709663,
       "tag": "0000_lovely_firebird",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790866833561,
+      "tag": "0001_special_legion",
+      "breakpoints": true
     }
   ]
 }

@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { ArrowUpRight, FolderKanban } from "lucide-react";
 import { Button } from "@/components/ui/button";
-export default function Dashboard() {
+import { requirePageSession } from "@/server/auth/session";
+export default async function Dashboard() {
+  await requirePageSession();
   return <div className="space-y-6"><div><p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Project overview</p><h1 className="text-2xl font-semibold">Dashboard</h1><p className="mt-2 text-sm text-muted-foreground">Pantau progres, sumber daya, dan kesiapan pekerjaan dalam satu workspace.</p></div>
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{["Proyek aktif", "Actual progress", "Manhour", "Pending inspection"].map(label => <section key={label} className="rounded-md border bg-white p-5"><h2 className="text-sm text-muted-foreground">{label}</h2><p className="mt-4 text-3xl font-semibold">—</p><p className="mt-3 text-xs text-muted-foreground">Belum ada data proyek</p></section>)}</div>
     <section className="rounded-md border bg-white p-6 md:p-10"><div className="mb-5 flex size-12 items-center justify-center rounded-md bg-slate-100"><FolderKanban /></div><h2 className="text-lg font-semibold">Mulai dari proyek pertama</h2><p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">Fondasi workspace ESTIMA sudah tersedia. Data operasional akan ditampilkan setelah modul proyek dan alur kerja diimplementasikan.</p><Button asChild className="mt-6"><Link href="/projects">Lihat modul Projects <ArrowUpRight className="size-4" /></Link></Button></section>

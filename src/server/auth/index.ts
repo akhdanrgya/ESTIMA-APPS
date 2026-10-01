@@ -11,9 +11,10 @@ function createAuth() {
   return betterAuth({
     secret, baseURL: process.env.BETTER_AUTH_URL,
     database: drizzleAdapter(getDb(), { provider: "pg", schema }),
-    emailAndPassword: { enabled: true, disableSignUp: true },
+    user: { additionalFields: { systemRole: { type: "string", required: false, defaultValue: "member", input: false } } },
+    emailAndPassword: { enabled: true, disableSignUp: true, minPasswordLength: 12, maxPasswordLength: 128 },
     session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 * 24 },
-    rateLimit: { enabled: true },
+    rateLimit: { enabled: true, storage: "database", window: 60, max: 60, customRules: { "/sign-in/email": { window: 60, max: 5 } } },
   });
 }
 export function getAuth() { return instance ??= createAuth(); }

@@ -2,7 +2,7 @@
 
 Fondasi Next.js full-stack berdasarkan PRD v1.2. Desain UI utama:
 [Figma APP UI UX](https://www.figma.com/design/4oFPFJCJ4i7F2KJjYjMT8u/APP-UI-UX?node-id=1-26).
-Shell saat ini masih sementara, belum merupakan implementasi desain Figma.
+Halaman login mengikuti frame Figma `1:2`. Shell workspace masih sementara.
 
 ## Menjalankan aplikasi
 
@@ -14,11 +14,12 @@ Copy-Item .env.example .env.local
 # Isi BETTER_AUTH_SECRET dengan nilai acak minimal 32 karakter.
 npm run infra:up
 npm run db:migrate
+npm run auth:create-admin
 npm run dev
 ```
 
-Buka http://localhost:3000. Halaman awal dapat dibuka tanpa database;
-auth dan layanan data memerlukan environment serta migrasi database.
+Buka http://localhost:3000/login. Halaman login dapat dibuka tanpa database;
+proses autentikasi dan workspace memerlukan environment serta migrasi database.
 Generate secret: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
 
 MinIO console: http://localhost:9001. Kredensial lokal ada di `compose.yaml`.
@@ -38,8 +39,8 @@ npm run db:studio
 
 `/api/health` memeriksa liveness aplikasi, bukan koneksi database/storage.
 Auth menggunakan Better Auth dengan pendaftaran publik dinonaktifkan.
-UI login dan provisioning admin belum dibuat. Workspace saat ini berisi placeholder
-publik tanpa data; wajib dilindungi sebelum menyambungkan data operasional.
+UI login, logout, proteksi workspace, dan bootstrap admin tersedia.
+Panduan alur dan batasan fitur: [Authentication](docs/auth.md).
 Modul bisnis belum diimplementasikan. Detail struktur: [architecture](docs/architecture.md).
 
 ## Catatan paket desain awal
