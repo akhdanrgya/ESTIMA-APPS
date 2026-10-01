@@ -21,6 +21,7 @@ test.beforeAll(async () => {
 test.afterAll(async () => {
   await sql`DELETE FROM users WHERE id = ${userId} AND email = ${email}`;
   await sql`DELETE FROM auth_rate_limits WHERE key LIKE ${testIP + '%'}`;
+  await sql`DELETE FROM auth_rate_limits WHERE key LIKE ${testIP.replace("198.18.", "198.19.") + '%'}`;
   await sql.end();
 });
 
@@ -60,6 +61,7 @@ test("server protects workspace, credentials work, logout revokes the session", 
   await page.locator("#password").fill(password);
   await page.getByRole("button", { name: "Sign In to Project Console" }).click();
   await expect(page).toHaveURL(/\/dashboard$/);
+  await page.getByRole("button", { name: "Open account menu" }).click();
   await expect(page.getByText("Auth Test User")).toBeVisible();
   const cookies = await context.cookies();
   const session = cookies.find(cookie => cookie.name.endsWith("better-auth.session_token"));
@@ -69,6 +71,7 @@ test("server protects workspace, credentials work, logout revokes the session", 
   expect(storedSession).toBeTruthy();
   await page.goto("/login");
   await expect(page).toHaveURL(/\/dashboard$/);
+  await page.getByRole("button", { name: "Open account menu" }).click();
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page).toHaveURL(/\/login$/);
   expect(await sql`SELECT id FROM sessions WHERE user_id = ${userId}`).toHaveLength(0);
@@ -95,4 +98,45 @@ test("auth API blocks public signup, cross-origin login, privilege injection and
     if (response.status() === 429) { throttled = true; break; }
   }
   expect(throttled).toBe(true);
+});
+
+test("executive dashboard demo supports filters, search, notices and mobile navigation", async ({ page, context }) => {
+  await context.setExtraHTTPHeaders({ "x-forwarded-for": testIP.replace("198.18.", "198.19.") });
+  const response = await context.request.post("/api/auth/sign-in/email", { headers: { origin: "http://localhost:3000" }, data: { email, password } });
+  expect(response.ok()).toBe(true);
+  await page.setViewportSize({ width: 1280, height: 1024 });
+  await page.goto("/dashboard");
+  await expect(page.getByRole("heading", { name: "Executive Operations Dashboard" })).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
+  await expect.poll(() => page.locator("img").evaluateAll(imgs => imgs.every(img => (img as HTMLImageElement).complete && (img as HTMLImageElement).naturalWidth > 0))).toBe(true);
+  await page.screenshot({ path: "test-results/dashboard-desktop.png", fullPage: true });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.getByLabel("Site Location").selectOption("42-C");
+  await expect(page.locator(".sector-row")).toHaveCount(1);
+  await expect(page.getByText("No pending approvals match these filters.")).toBeVisible();
+  await page.getByRole("button", { name: "Reset filters" }).click();
+  await page.getByRole("button", { name: "Approve", exact: true }).click();
+  await page.getByRole("button", { name: "Approve in demo" }).click();
+  await expect(page.locator(".approval-item")).toHaveCount(2);
+  await page.getByRole("button", { name: "New Notice / Quick Action" }).click();
+  await page.getByLabel("Notice", { exact: true }).fill("Demo safety briefing at 07:00.");
+  await page.getByRole("button", { name: "Add demo notice" }).click();
+  await expect(page.locator(".activity-list")).toContainText("Demo safety briefing at 07:00.");
+  await page.getByRole("searchbox", { name: "Search demo records" }).fill("SCF-42-0891");
+  await page.locator(".search-results").getByRole("button").click();
+  await expect(page.getByRole("dialog")).toContainText("Cuplock Tower");
+  await page.getByRole("button", { name: "Close dialog" }).click();
+  await page.getByRole("button", { name: "Export Summary" }).click();
+  const download = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download CSV" }).click();
+  expect((await download).suggestedFilename()).toBe("ESTIMA-executive-summary-W12-demo.csv");
+  await page.reload();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({ path: "test-results/dashboard-mobile.png", fullPage: true });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.getByRole("button", { name: "Open navigation" }).click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.getByRole("dialog").getByRole("link", { name: "Projects", exact: true }).click();
+  await expect(page).toHaveURL(/\/projects$/);
+  await expect(page.getByRole("dialog")).not.toBeVisible();
 });

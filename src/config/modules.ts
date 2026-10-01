@@ -9,6 +9,9 @@ export const modules = [
   { slug: "materials", name: "Materials", description: "Register material, stok, permintaan, dan pemakaian." },
   { slug: "quality", name: "QA/QC", description: "Inspection, checklist, NCR, dan approval." },
   { slug: "punchlist", name: "Punch List", description: "Temuan, penanggung jawab, verifikasi, dan closure." },
+  { slug: "hse", name: "HSE", description: "Keselamatan kerja, izin kerja, dan pemantauan risiko lapangan." },
+  { slug: "commercial", name: "Commercial", description: "BOQ, variation, claim, dan commercial progress." },
+  { slug: "documents", name: "Documents", description: "Dokumen proyek, drawing, revisi, dan transmittal." },
   { slug: "reports", name: "Reports", description: "Laporan proyek dan integrasi spreadsheet." },
   { slug: "administration", name: "Administration", description: "User, role, akses proyek, dan audit trail." },
 ] as const;
